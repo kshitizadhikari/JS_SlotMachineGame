@@ -7,6 +7,9 @@
 
 const prompt = require("prompt-sync")();
 
+const COLS = 3;
+const ROWS = 3;
+
 const SYMBOL_COUNT = {
   A: 2,
   B: 4,
@@ -71,11 +74,68 @@ const spin = () => {
       symbols.push(symbol);
     }
   }
-  console.log(symbols);
+
+  const reels = [];
+  for (let i = 0; i < COLS; i++) {
+    reels.push([]);
+    const reelSymbols = [...symbols];
+    for (let j = 0; j < ROWS; j++) {
+      const randomIndex = Math.floor(Math.random() * reelSymbols.length);
+      const selectedSymbol = reelSymbols[randomIndex];
+      reels[i].push(selectedSymbol);
+      reelSymbols.splice(randomIndex, 1);
+    }
+  }
+
+  return reels;
 };
 
-// let balance = deposit();
-// const totalLines = getLines();
-// const numBetAmount = getBetAmount(balance, totalLines);
+const transpose = (reels) => {
+  const rowReels = [];
 
-spin();
+  for (let i = 0; i < ROWS; i++) {
+    rowReels.push([]);
+    for (let j = 0; j < COLS; j++) {
+      rowReels[i].push(reels[j][i]);
+    }
+  }
+  return rowReels;
+};
+
+const printRows = (rowReels) => {
+  rowReels.forEach((row) => {
+    let rowString = "";
+    for (const [i, symbol] of row.entries()) {
+      rowString += symbol;
+      if (i != row.length - 1) {
+        rowString += " | ";
+      }
+    }
+    console.log(rowString);
+  });
+};
+
+const CheckWinnings = (rowReels) => {
+  let rowsWon = 0;
+  rowReels.forEach((row) => {
+    const val = row[0];
+    let ae = 0;
+    for (let i = 1; i < row.length; i++) {
+      if (row[i] == val) {
+        ae++;
+      }
+    }
+    if (ae == 2) {
+      rowsWon++;
+    }
+  });
+  console.log(rowsWon);
+};
+
+let balance = deposit();
+const totalLines = getLines();
+const numBetAmount = getBetAmount(balance, totalLines);
+const reels = spin();
+const rowReels = transpose(reels);
+printRows(rowReels);
+CheckWinnings(rowReels);
