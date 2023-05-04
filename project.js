@@ -15,7 +15,7 @@ const SYMBOL_COUNT = {
   B: 4,
   C: 6,
   D: 8,
-  E: 10,
+  // E: 10,
 };
 
 const SYMBOL_VALUES = {
@@ -23,7 +23,7 @@ const SYMBOL_VALUES = {
   B: 4,
   C: 3,
   D: 2,
-  E: 1,
+  // E: 1,
 };
 
 const deposit = () => {
@@ -115,21 +115,39 @@ const printRows = (rowReels) => {
   });
 };
 
-const CheckWinnings = (rowReels) => {
-  let rowsWon = 0;
-  rowReels.forEach((row) => {
-    const val = row[0];
-    let ae = 0;
-    for (let i = 1; i < row.length; i++) {
-      if (row[i] == val) {
-        ae++;
+// const CheckWinnings = (rowReels) => {
+//   let rowsWon = 0;
+//   rowReels.forEach((row) => {
+//     const val = row[0];
+//     let ae = 0;
+//     for (let i = 1; i < row.length; i++) {
+//       if (row[i] == val) {
+//         ae++;
+//       }
+//     }
+//     if (ae == 2) {
+//       rowsWon++;
+//     }
+//   });
+//   console.log(rowsWon);
+// };
+
+const getWinnings = (numBetAmount, totalLines, rowReels) => {
+  let winnings = 0;
+  for (let row = 0; row < totalLines; row++) {
+    const symbols = rowReels[row];
+    let allSame = true;
+    for (const symbol of symbols) {
+      if (symbol != symbols[0]) {
+        allSame = false;
+        break;
       }
     }
-    if (ae == 2) {
-      rowsWon++;
+    if (allSame) {
+      winnings = winnings + numBetAmount * SYMBOL_VALUES[symbols[0]];
     }
-  });
-  console.log(rowsWon);
+  }
+  return winnings;
 };
 
 let balance = deposit();
@@ -138,4 +156,5 @@ const numBetAmount = getBetAmount(balance, totalLines);
 const reels = spin();
 const rowReels = transpose(reels);
 printRows(rowReels);
-CheckWinnings(rowReels);
+const winnings = getWinnings(numBetAmount, totalLines, rowReels);
+console.log("You won, $" + winnings.toString());
